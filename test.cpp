@@ -2,12 +2,16 @@
 #include <unistd.h>
 #include <iostream>
 #include <string>
+#include "crcModbus.hpp"
+
+unsigned short crc;
 
 int main(int argc, char **argv){
 	using namespace std;
 	
-	Serial driver("/dev/ttyUSB1", 115200);
-	
+	Serial driver("/dev/ttyUSB2", 115200);
+	crcModbus crc_obj;
+
 	uint8_t read_buf;
 	string read;
 
@@ -20,8 +24,13 @@ int main(int argc, char **argv){
 	buf[3] = 0x32;
 	buf[4] = 0x00;
 	buf[5] = 0x03;
-	buf[6] = 0xE2;
-	buf[7] = 0x06;
+    buf[6] = 0x00;      //0xE2
+	buf[7] = 0x00;      //0x06
+
+    crc = crc_obj.crc_modbus(buf, 6);
+    memcpy(&buf[6], (char*)&crc, 2);
+    // cout << (unsigned short)buf[6] << endl;
+    // cout << (unsigned short)buf[7] << endl;
 	if(write(driver.serial_port, buf, 8)>0){
 		cout<<"I send"<<endl;
 	}
@@ -46,8 +55,12 @@ int main(int argc, char **argv){
 	buf[3] = 0x31;
 	buf[4] = 0x00;
 	buf[5] = 0x08;
-	buf[6] = 0xD2;
-	buf[7] = 0x03;
+	buf[6] = 0x00;      //D2
+	buf[7] = 0x00;      //03
+    crc = crc_obj.crc_modbus(buf, 6);
+    memcpy(&buf[6], (char*)&crc, 2);
+    // cout << (unsigned short)buf[6]<< endl;
+    // cout << (unsigned short)buf[7] << endl;
 	if(write(driver.serial_port, buf, 8)>0){
 		cout<<"I send"<<endl;
 	}
@@ -72,8 +85,12 @@ int main(int argc, char **argv){
 	buf[3] = 0x3A;
 	buf[4] = 0x01;
 	buf[5] = 0x2C;
-	buf[6] = 0xA2;
-	buf[7] = 0x4A; 
+	buf[6] = 0x00;      //A2
+	buf[7] = 0x00;      //4A
+    crc = crc_obj.crc_modbus(buf, 6);
+    memcpy(&buf[6], (char*)&crc, 2);
+    // cout << (unsigned short)buf[6]<< endl;
+    // cout << (unsigned short)buf[7] << endl;
 	if(write(driver.serial_port, buf, 8)>0){
 		cout<<"I send:"<<endl;
 	}
@@ -97,8 +114,12 @@ int main(int argc, char **argv){
 	buf[3] = 0x2C;
 	buf[4] = 0x00;
 	buf[5] = 0x02;
-	buf[6] = 0x0E;
-	buf[7] = 0x02; 
+	buf[6] = 0x00;      //0E
+	buf[7] = 0x00;      //02
+    crc = crc_obj.crc_modbus(buf, 6);
+    memcpy(&buf[6], (char*)&crc, 2);
+    // cout << (unsigned short)buf[6]<< endl;
+    // cout << (unsigned short)buf[7] << endl;
 	if(write(driver.serial_port, buf, 8)>0){
 		cout<<"I send:"<<endl;
 	}
@@ -121,4 +142,3 @@ int main(int argc, char **argv){
 
 	return 0;
 }
-
